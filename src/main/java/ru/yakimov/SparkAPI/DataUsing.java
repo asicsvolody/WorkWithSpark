@@ -1,10 +1,14 @@
 package ru.yakimov.SparkAPI;
 
 import net.arnx.jsonic.JSON;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.*;
+import org.apache.derby.iapi.services.io.ArrayInputStream;
+import org.apache.spark.sql.execution.columnar.compression.RunLengthEncoding;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class DataUsing {
 
@@ -38,8 +42,47 @@ public class DataUsing {
         }
     }
 
+    private static void writeSchemaToAvro(Schema schema, String path){
+        try(FileWriter fileWriter = new FileWriter(path)){
+            fileWriter.write(schema.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+//    private byte[] fromJsonToAvroByteCode(String json, String schemaStr) throws IOException {
+//        InputStream input = new ArrayInputStream(json.getBytes());
+//        DataInputStream dataInputStream = new DataInputStream(input);
+//        Schema schema = Schema.parse(schemaStr);
+//        Decoder decoder = DecoderFactory.get().jsonDecoder(schema, dataInputStream);
+//        DatumReader<Object> reader = new GenericDatumReader<>(schema);
+//        Object datum = reader.read(null, decoder);
+//
+//        GenericDatumWriter<Object> writer = new GenericDatumWriter<>(schema);
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//
+//        Encoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+//        writer.write(datum, encoder);
+//        encoder.flush();
+//        return outputStream.toByteArray();
+//    }
+
+
+
+
+
+
+
+
+
+
     public static void main(String[] args) {
         unloadingNewUsersWithDate(150,"user");
+        writeSchemaToAvro(UserWithData.createAvroSchema(),"src/main/resources/UserWhithData.avsc");
+
+
     }
 
 

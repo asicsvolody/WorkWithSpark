@@ -1,8 +1,10 @@
 package ru.yakimov.SparkAPI;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.avro.Schema;
+import org.apache.avro.SchemaBuilder;
+
 
 public class UserWithData {
 
@@ -15,8 +17,7 @@ public class UserWithData {
     @JsonProperty("Phone Number")
     private String phone;
 
-    @JsonIgnore
-    private String level;
+
 
     public UserWithData() {
     }
@@ -25,7 +26,6 @@ public class UserWithData {
         this.id = id;
         this.name = name;
         this.phone = phone;
-        this.level = level;
     }
 
     public long getId() {
@@ -40,10 +40,6 @@ public class UserWithData {
         return phone;
     }
 
-    public String getLevel() {
-        return level;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
@@ -56,9 +52,7 @@ public class UserWithData {
         this.phone = phone;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
-    }
+
 
     @Override
     public String toString() {
@@ -66,7 +60,16 @@ public class UserWithData {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
-                ", level='" + level + '\'' +
                 '}';
+    }
+
+    public static Schema createAvroSchema(){
+        return SchemaBuilder.record(UserWithData.class.getName())
+                .namespace(UserWithData.class.getPackageName())
+                .fields()
+                .requiredLong("id")
+                .requiredString("name")
+                .requiredString("phone")
+                .endRecord();
     }
 }
