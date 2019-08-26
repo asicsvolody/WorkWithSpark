@@ -1,6 +1,5 @@
 package ru.yakimov.SparkAPI;
 
-import com.univocity.parsers.common.record.Record;
 import net.arnx.jsonic.JSON;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
@@ -9,7 +8,6 @@ import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.*;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.*;
@@ -62,10 +60,9 @@ public class DataUsing implements Serializable {
         }
     }
 
-    private List<GenericData.Record> getListRecord(String dir){
+    private List<String[]> getListRecord(String dir){
         return SC.textFile(dir+"/*.json")
                 .map(DataUsing::dataJson)
-                .map(DataUsing ::getRecord)
                 .collect();
     }
 
@@ -105,18 +102,19 @@ public class DataUsing implements Serializable {
         return dataFileWriter;
     }
 
-    public static GenericData.Record getRecord(String [] jsonDataArr){
+    private GenericData.Record getRecord(String [] jsonDataArr){
         GenericData.Record record = new GenericData.Record(SCHEMA);
         record.put("id", Long.parseLong(jsonDataArr[0]));
         record.put("name", jsonDataArr[1]);
-        record.put("phone", Long.parseLong(jsonDataArr[2]));
+        record.put("phone", jsonDataArr[2]);
         return record;
     }
 
     private void saveToAvro(){
         try (DataFileWriter<GenericRecord> dataFileWriter = getFileWrite()){
-            for(GenericData.Record record: getListRecord(DIR_JSON)){
-                dataFileWriter.append(record);
+
+            for( String[] jsonStringArr : getListRecord(DIR_JSON)){
+                dataFileWriter.append(getRecord(jsonStringArr));
             }
 
         } catch (IOException e) {
