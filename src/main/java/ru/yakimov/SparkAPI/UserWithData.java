@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 
+import java.io.Serializable;
 
-public class UserWithData {
+
+public class UserWithData implements Serializable {
 
     @JsonProperty("Number")
     private long id;

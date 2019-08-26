@@ -1,5 +1,6 @@
 package ru.yakimov.SparkAPI;
 
+import com.univocity.parsers.common.record.Record;
 import net.arnx.jsonic.JSON;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
@@ -14,7 +15,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import java.io.*;
 import java.util.*;
 
-public class DataUsing {
+public class DataUsing implements Serializable {
     private static final String DIR_JSON = "user";
     private static final String OUTPUT_FILE_PATH = "src/main/resources/User.avro";
     private static final String PATH_SCHEMA = "src/main/resources/UserWhithData.avsc";
@@ -30,7 +31,7 @@ public class DataUsing {
         }
     }
 
-    private static void unloadingNewUsersWithDate (int howMany, String toDir){
+    private void unloadingNewUsersWithDate (int howMany, String toDir){
         File dir = new File(toDir);
         boolean isThereDir = true;
 
@@ -53,7 +54,7 @@ public class DataUsing {
         }
     }
 
-    private static void writeSchemaAvro(String path){
+    private void writeSchemaAvro(String path){
         try(FileWriter fileWriter = new FileWriter(path)){
             fileWriter.write(SCHEMA.toString());
         } catch (IOException e) {
@@ -61,10 +62,11 @@ public class DataUsing {
         }
     }
 
-    private static JavaRDD<GenericData.Record> getRDDJsonsString(String dir){
+    private List<GenericData.Record> getListRecord(String dir){
         return SC.textFile(dir+"/*.json")
                 .map(DataUsing::dataJson)
-                .map(DataUsing ::getRecord);
+                .map(DataUsing ::getRecord)
+                .collect();
     }
 
     private static String[] dataJson(String json){
@@ -95,7 +97,7 @@ public class DataUsing {
 
 
 
-    private static DataFileWriter<GenericRecord> getFileWrite() throws IOException {
+    private DataFileWriter<GenericRecord> getFileWrite() throws IOException {
 
         DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(SCHEMA);
         DataFileWriter<GenericRecord> dataFileWriter = new DataFileWriter<>(datumWriter);
@@ -105,15 +107,17 @@ public class DataUsing {
 
     public static GenericData.Record getRecord(String [] jsonDataArr){
         GenericData.Record record = new GenericData.Record(SCHEMA);
-        record.put("user_id", Long.parseLong(jsonDataArr[0]));
-        record.put("user_name", jsonDataArr[1]);
-        record.put("user_phone", Long.parseLong(jsonDataArr[2]));
+        record.put("id", Long.parseLong(jsonDataArr[0]));
+        record.put("name", jsonDataArr[1]);
+        record.put("phone", Long.parseLong(jsonDataArr[2]));
         return record;
     }
 
-    private static void saveToAvro(){
+    private void saveToAvro(){
         try (DataFileWriter<GenericRecord> dataFileWriter = getFileWrite()){
-            getRDDJsonsString(DIR_JSON).foreach(dataFileWriter::append);
+            for(GenericData.Record record: getListRecord(DIR_JSON)){
+                dataFileWriter.append(record);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -126,12 +130,15 @@ public class DataUsing {
 
         final int countJson = 150;
 
+        DataUsing dataUsing = new DataUsing();
 
-        unloadingNewUsersWithDate(countJson,DIR_JSON);
 
-        writeSchemaAvro(PATH_SCHEMA);
 
-        saveToAvro();
+        dataUsing.unloadingNewUsersWithDate(countJson,DIR_JSON);
+
+        dataUsing.writeSchemaAvro(PATH_SCHEMA);
+
+        dataUsing.saveToAvro();
 
 
 
