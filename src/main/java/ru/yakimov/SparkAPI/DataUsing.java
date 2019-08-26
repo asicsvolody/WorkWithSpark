@@ -14,22 +14,18 @@ import java.io.*;
 import java.util.*;
 
 public class DataUsing implements Serializable {
-    private static final String DIR_JSON = "user";
-    private static final String OUTPUT_FILE_PATH = "src/main/resources/User.avro";
-    private static final String PATH_SCHEMA = "src/main/resources/UserWhithData.avsc";
-    private static final JavaSparkContext SC = new JavaSparkContext(
-            new SparkConf().setMaster("local").setAppName("MyApp"));
-    private static final Schema SCHEMA = new Schema.Parser()
-            .parse( SC.textFile(PATH_SCHEMA).first() );
+    private final JavaSparkContext SC;
+    private  final Schema SCHEMA;
 
+    public DataUsing(String pathSchema) {
+        SC = new JavaSparkContext(
+                new SparkConf().setMaster("local").setAppName("MyApp"));
 
-    private static <T>void convertToJSonic(T obj, String filePath) throws IOException {
-        try(FileWriter fileWriter = new FileWriter(filePath)){
-            fileWriter.write(JSON.encode(obj));
-        }
+        SCHEMA = new Schema.Parser()
+                .parse( SC.textFile(pathSchema).first() );
     }
 
-    private void unloadingNewUsersWithDate (int howMany, String toDir){
+    void unloadingNewUsersWithDate(int howMany, String toDir){
         File dir = new File(toDir);
         boolean isThereDir = true;
 
@@ -52,7 +48,13 @@ public class DataUsing implements Serializable {
         }
     }
 
-    private void writeSchemaAvro(String path){
+    private static <T>void convertToJSonic(T obj, String filePath) throws IOException {
+        try(FileWriter fileWriter = new FileWriter(filePath)){
+            fileWriter.write(JSON.encode(obj));
+        }
+    }
+
+    void writeSchemaAvro(String path){
         try(FileWriter fileWriter = new FileWriter(path)){
             fileWriter.write(SCHEMA.toString());
         } catch (IOException e) {
@@ -94,11 +96,11 @@ public class DataUsing implements Serializable {
 
 
 
-    private DataFileWriter<GenericRecord> getFileWrite() throws IOException {
+    private DataFileWriter<GenericRecord> getFileWrite(String path) throws IOException {
 
         DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(SCHEMA);
         DataFileWriter<GenericRecord> dataFileWriter = new DataFileWriter<>(datumWriter);
-        dataFileWriter.create(SCHEMA, new File(OUTPUT_FILE_PATH));
+        dataFileWriter.create(SCHEMA, new File(path));
         return dataFileWriter;
     }
 
@@ -110,10 +112,10 @@ public class DataUsing implements Serializable {
         return record;
     }
 
-    private void saveToAvro(){
-        try (DataFileWriter<GenericRecord> dataFileWriter = getFileWrite()){
+    void saveToAvro(String dirJson, String pathAvro){
+        try (DataFileWriter<GenericRecord> dataFileWriter = getFileWrite(pathAvro)){
 
-            for( String[] jsonStringArr : getListRecord(DIR_JSON)){
+            for( String[] jsonStringArr : getListRecord(dirJson)){
                 dataFileWriter.append(getRecord(jsonStringArr));
             }
 
@@ -121,28 +123,4 @@ public class DataUsing implements Serializable {
             e.printStackTrace();
         }
     }
-
-
-    public static void main(String[] args) {
-
-
-        final int countJson = 150;
-
-        DataUsing dataUsing = new DataUsing();
-
-
-
-        dataUsing.unloadingNewUsersWithDate(countJson,DIR_JSON);
-
-        dataUsing.writeSchemaAvro(PATH_SCHEMA);
-
-        dataUsing.saveToAvro();
-
-
-
-
-
-    }
-
-
 }

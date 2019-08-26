@@ -1,0 +1,1 @@
+{"type":"record","name":"UserWithData","namespace":"ru.yakimov.SparkAPI","fields":[{"name":"id","type":"long"},{"name":"name","type":"string"},{"name":"phone","type":"string"}]}
