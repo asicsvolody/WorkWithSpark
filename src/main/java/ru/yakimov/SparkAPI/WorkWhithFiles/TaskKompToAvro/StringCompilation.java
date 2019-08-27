@@ -12,7 +12,8 @@ public class StringCompilation {
     public static void writeArrToClass(String[] javaLinesArr, String pathTo){
         try(FileWriter writer = new FileWriter(new File(pathTo), true)) {
             for (String str : javaLinesArr) {
-                writer.write(str);
+                if(!str.startsWith("package"))
+                    writer.write(str);
             }
         } catch (IOException e) {
             e.printStackTrace();

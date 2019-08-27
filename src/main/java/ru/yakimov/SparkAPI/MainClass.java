@@ -1,7 +1,8 @@
 package ru.yakimov.SparkAPI;
 
 
-import ru.yakimov.SparkAPI.WorkWhithFiles.TaskKompToAvro.ReflexCreateAvroSchema;
+import ru.yakimov.SparkAPI.Spark.AvroInquiries;
+import ru.yakimov.SparkAPI.WorkWhithFiles.TaskKompToAvro.StringCompilation;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -13,10 +14,10 @@ public class MainClass {
         final int countJson = 150;
         final String DIR_JSON = "user";
         final String OUTPUT_FILE_PATH = "src/main/resources/User.avro";
-        final String PATH_SCHEMA = "src/main/resources/UserWithData1.avsc";
+        final String PATH_SCHEMA = "src/main/resources/UserWithData.avsc";
 
 
-//        AvroFormsCreator.writeSchemaAvro(PATH_SCHEMA, new UserWithData1());
+//        AvroFormsCreator.writeSchemaAvro(PATH_SCHEMA, new UserWithData());
 //        DataUsing dataUsing = new DataUsing(PATH_SCHEMA);
 //        UserWithDataJSONICsCreator.unloadingNewUsersWithDate(countJson,DIR_JSON);
 //        dataUsing.saveToAvro(DIR_JSON, OUTPUT_FILE_PATH);
@@ -25,23 +26,13 @@ public class MainClass {
 //        ai.getNameForId(12L).show();
 //        ai.getDs().show();
 //        ai.getPhoneForName("Владимир12").show();
+//
+//
+        String[] classLinesArr = StringCompilation.printData(
+                "/java/projects/WorkWithSpark/src/main/java/ru/yakimov/SparkAPI/WorkWhithFiles/UserWithData.java");
+        StringCompilation.writeArrToClass(classLinesArr, "/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java");
 
-
-//        String[] classLinesArr =StringCompilation.printData(
-//                "/java/projects/WorkWithSpark/src/main/java/ru/yakimov/SparkAPI/WorkWhithFiles/UserWithData1.java");
-//        StringCompilation.writeArrToClass(classLinesArr, "/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData1.java");
-//        StringCompilation.compile(new File("/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData1.java"));
-
-        try {
-
-            new ReflexCreateAvroSchema().createSchema(
-                    new File("/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.class"),
-                    "/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.avsc");
-        } catch (MalformedURLException | ClassNotFoundException | NoSuchMethodException
-                | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
+        StringCompilation.compile(new File("/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java"));
 
     }
 }
