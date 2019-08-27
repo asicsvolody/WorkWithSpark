@@ -1,4 +1,4 @@
-package ru.yakimov.SparkAPI;
+package ru.yakimov.SparkAPI.WorkWhithFiles;
 
 import net.arnx.jsonic.JSON;
 
@@ -18,7 +18,7 @@ public class UserWithDataJSONICsCreator {
             return;
 
         for (int i = 0; i < howMany; i++) {
-            UserWithData user = new UserWithData(1+i,
+            UserWithData1 user = new UserWithData1(1+i,
                     "Владимир"+(i+1),
                     "+7"+ (int) (Math.random() * 1000000000));
             try {

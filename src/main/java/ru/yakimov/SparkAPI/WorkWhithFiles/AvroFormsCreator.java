@@ -1,8 +1,5 @@
-package ru.yakimov.SparkAPI;
+package ru.yakimov.SparkAPI.WorkWhithFiles;
 
-import net.arnx.jsonic.JSON;
-
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 

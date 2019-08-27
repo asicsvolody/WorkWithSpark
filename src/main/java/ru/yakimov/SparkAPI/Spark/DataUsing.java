@@ -1,6 +1,5 @@
-package ru.yakimov.SparkAPI;
+package ru.yakimov.SparkAPI.Spark;
 
-import net.arnx.jsonic.JSON;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;

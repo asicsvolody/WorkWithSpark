@@ -1,4 +1,4 @@
-package ru.yakimov.SparkAPI;
+package ru.yakimov.SparkAPI.WorkWhithFiles;
 
 import org.apache.avro.Schema;
 

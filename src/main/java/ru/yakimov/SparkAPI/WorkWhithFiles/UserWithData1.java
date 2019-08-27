@@ -1,4 +1,4 @@
-package ru.yakimov.SparkAPI;
+package ru.yakimov.SparkAPI.WorkWhithFiles;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import org.apache.avro.SchemaBuilder;
 import java.io.Serializable;
 
 
-public class UserWithData implements Serializable , SchemaGiving {
+public class UserWithData1 implements Serializable , SchemaGiving {
 
     @JsonProperty("Number")
     private long id;
@@ -21,10 +21,10 @@ public class UserWithData implements Serializable , SchemaGiving {
 
 
 
-    public UserWithData() {
+    public UserWithData1() {
     }
 
-    public UserWithData(long id, String name, String phone) {
+    public UserWithData1(long id, String name, String phone) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -58,7 +58,7 @@ public class UserWithData implements Serializable , SchemaGiving {
 
     @Override
     public String toString() {
-        return "UserWithData{" +
+        return "UserWithData1{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
@@ -67,8 +67,8 @@ public class UserWithData implements Serializable , SchemaGiving {
 
     @Override
     public Schema createAvroSchema(){
-        return SchemaBuilder.record(UserWithData.class.getName())
-                .namespace(UserWithData.class.getPackageName())
+        return SchemaBuilder.record(UserWithData1.class.getName())
+                .namespace(UserWithData1.class.getPackageName())
                 .fields()
                 .requiredLong("id")
                 .requiredString("name")
