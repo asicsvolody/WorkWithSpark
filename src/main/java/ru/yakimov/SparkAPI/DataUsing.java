@@ -25,42 +25,6 @@ public class DataUsing implements Serializable {
                 .parse( SC.textFile(pathSchema).first() );
     }
 
-    void unloadingNewUsersWithDate(int howMany, String toDir){
-        File dir = new File(toDir);
-        boolean isThereDir = true;
-
-        if(!dir.exists())
-            isThereDir = dir.mkdirs();
-
-        if(!isThereDir)
-            return;
-
-        for (int i = 0; i < howMany; i++) {
-            UserWithData user = new UserWithData(1+i,
-                    "Владимир"+(i+1),
-                    "+7"+ (int) (Math.random() * 1000000000),
-                    "high");
-            try {
-                convertToJSonic(user, dir.getPath()+"/user"+(i+1)+".json");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static <T>void convertToJSonic(T obj, String filePath) throws IOException {
-        try(FileWriter fileWriter = new FileWriter(filePath)){
-            fileWriter.write(JSON.encode(obj));
-        }
-    }
-
-    void writeSchemaAvro(String path){
-        try(FileWriter fileWriter = new FileWriter(path)){
-            fileWriter.write(SCHEMA.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private List<String[]> getListRecord(String dir){
         return SC.textFile(dir+"/*.json")

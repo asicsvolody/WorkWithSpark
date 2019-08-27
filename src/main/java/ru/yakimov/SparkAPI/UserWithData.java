@@ -8,7 +8,7 @@ import org.apache.avro.SchemaBuilder;
 import java.io.Serializable;
 
 
-public class UserWithData implements Serializable {
+public class UserWithData implements Serializable , SchemaGiving {
 
     @JsonProperty("Number")
     private long id;
@@ -24,7 +24,7 @@ public class UserWithData implements Serializable {
     public UserWithData() {
     }
 
-    public UserWithData(long id, String name, String phone, String level) {
+    public UserWithData(long id, String name, String phone) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -65,7 +65,8 @@ public class UserWithData implements Serializable {
                 '}';
     }
 
-    public static Schema createAvroSchema(){
+    @Override
+    public Schema createAvroSchema(){
         return SchemaBuilder.record(UserWithData.class.getName())
                 .namespace(UserWithData.class.getPackageName())
                 .fields()
