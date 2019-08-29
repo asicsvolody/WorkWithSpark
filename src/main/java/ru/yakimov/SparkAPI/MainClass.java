@@ -1,12 +1,10 @@
 package ru.yakimov.SparkAPI;
 
 
-import ru.yakimov.SparkAPI.Spark.AvroInquiries;
-import ru.yakimov.SparkAPI.WorkWhithFiles.TaskKompToAvro.StringCompilation;
+import ru.yakimov.SparkAPI.Spark.AvroInquiriesSparkAPI;
+import ru.yakimov.SparkAPI.Spark.AvroInquiriesSparkSQL;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 public class MainClass {
     public static void main(String[] args) {
@@ -22,17 +20,34 @@ public class MainClass {
 //        UserWithDataJSONICsCreator.unloadingNewUsersWithDate(countJson,DIR_JSON);
 //        dataUsing.saveToAvro(DIR_JSON, OUTPUT_FILE_PATH);
 
-//        AvroInquiries ai = new AvroInquiries();
+//        AvroInquiriesSparkSQL ai = new AvroInquiriesSparkSQL();
 //        ai.getNameForId(12L).show();
 //        ai.getDs().show();
 //        ai.getPhoneForName("Владимир12").show();
+//        ai.setPhoneForName("Владимир12","23333322");
+//        ai.getUserWithName("Владимир12").show();
+//        ai.setPhoneForName("Владимир12","7777777777777");
 //
 //
-        String[] classLinesArr = StringCompilation.printData(
-                "/java/projects/WorkWithSpark/src/main/java/ru/yakimov/SparkAPI/WorkWhithFiles/UserWithData.java");
-        StringCompilation.writeArrToClass(classLinesArr, "/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java");
+//        String[] classLinesArr = StringCompilation.printData(
+//                "/java/projects/WorkWithSpark/src/main/java/ru/yakimov/SparkAPI/WorkWhithFiles/UserWithData.java");
+//        StringCompilation.writeArrToClass(classLinesArr, "/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java");
+//
+//        StringCompilation.compile(new File("/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java"));
 
-        StringCompilation.compile(new File("/java/projects/WorkWithSpark/src/main/resources/TaskCompile/UserWithData.java"));
+
+        AvroInquiriesSparkAPI api = new AvroInquiriesSparkAPI();
+
+        api.getPhoneFromName("Владимир12");
+
+        System.out.println(api.setPhoneForName("Владимир12", "7777777777"));
+        System.out.println(api.setPhoneForName("notUser", "7777777777"));
+
+
+        api.getPhoneFromName("Владимир12");
+
+
+
 
     }
 }
