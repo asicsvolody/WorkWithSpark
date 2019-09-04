@@ -3,13 +3,12 @@ package ru.yakimov.SparkAPI.WorkWhithFiles;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.avro.Schema;
-import org.apache.avro.SchemaBuilder;
-import ru.yakimov.SparkAPI.WorkWhithFiles.SchemaGiving;
+//import org.apache.avro.SchemaBuilder;
 
 import java.io.Serializable;
 
 
-public class UserWithData implements Serializable , SchemaGiving {
+public class UserWithData implements Serializable, SchemaGiving {
 
     @JsonProperty("Number")
     private long id;
@@ -67,13 +66,18 @@ public class UserWithData implements Serializable , SchemaGiving {
     }
 
     @Override
-    public Schema createAvroSchema(){
-        return SchemaBuilder.record(UserWithData.class.getName())
-                .namespace(UserWithData.class.getPackageName())
-                .fields()
-                .requiredLong("id")
-                .requiredString("name")
-                .requiredString("phone")
-                .endRecord();
+    public Schema createAvroSchema() {
+        return null;
     }
+
+//    @Override
+//    public Schema createAvroSchema(){
+//        return SchemaBuilder.record(UserWithData.class.getName())
+//                .namespace(UserWithData.class.getPackageName())
+//                .fields()
+//                .requiredLong("id")
+//                .requiredString("name")
+//                .requiredString("phone")
+//                .endRecord();
+//    }
 }

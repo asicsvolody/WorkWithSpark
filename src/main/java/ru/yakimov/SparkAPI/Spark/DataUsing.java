@@ -17,8 +17,7 @@ public class DataUsing implements Serializable {
     private  final Schema SCHEMA;
 
     public DataUsing(String pathSchema) {
-        SC = new JavaSparkContext(
-                new SparkConf().setMaster("local").setAppName("MyApp"));
+        SC = AvroInquiriesSparkSQL.sc;
 
         SCHEMA = new Schema.Parser()
                 .parse( SC.textFile(pathSchema).first() );
@@ -75,7 +74,7 @@ public class DataUsing implements Serializable {
         return record;
     }
 
-    void saveToAvro(String dirJson, String pathAvro){
+    public void saveToAvro(String dirJson, String pathAvro){
         try (DataFileWriter<GenericRecord> dataFileWriter = getFileWrite(pathAvro)){
 
             for( String[] jsonStringArr : getListRecord(dirJson)){
