@@ -15,18 +15,17 @@ import java.util.List;
 public class SparkDataWorker {
     private final String primaryKayFildName = "id";
     private String pathSaveTo ;
-    private SQLContext spark;
     private Dataset<Row> data;
     private StructType structType;
+    private SparkSession spark;
 
     public SparkDataWorker(String pathSaveTo ) {
         this.pathSaveTo = pathSaveTo;
-        SparkSession session = SparkSession.builder()
+        spark = SparkSession.builder()
                 .appName("Universal App")
                 .config("spark.master", "local")
                 .getOrCreate();
-        session.sparkContext().setLogLevel("WARN");
-        this.spark = new SQLContext(session);
+        spark.sparkContext().setLogLevel("WARN");
 
         data = spark
                 .read()
@@ -37,7 +36,6 @@ public class SparkDataWorker {
         save();
 
         data.show();
-
     }
 
     public void save(){
@@ -54,7 +52,7 @@ public class SparkDataWorker {
     }
 
 
-    public void usingNewDataFromDir(String dirPath) throws FileNotFoundException, NotDirectoryException {
+    private void usingNewDataFromDir(String dirPath) throws FileNotFoundException, NotDirectoryException {
         Dataset<Row> newData = null;
         List<Row> newRows = new ArrayList<>();
 
@@ -70,7 +68,14 @@ public class SparkDataWorker {
                     deleteThisLine(getPrimaryValue(newDataRow));
                     break;
                 case "I" :
-                    newRows.add(getNewRow(newDataRow));
+
+                    try {
+                        newRows.add(insertRow(newDataRow));
+
+                    } catch (MoreOneUserWithIdException e) {
+                        e.printStackTrace();
+                    }
+
                     break;
                 case "U" :
                     try {
@@ -87,6 +92,14 @@ public class SparkDataWorker {
         addToData(newRows);
         data.show();
         save();
+
+    }
+
+    private Row insertRow(Row row) throws MoreOneUserWithIdException {
+        if(isLineWithPrimaryKay(getPrimaryValue(row))){
+            throw new MoreOneUserWithIdException(getPrimaryValue(row)+ " is used");
+        }
+        return getNewRow(row);
 
     }
 
@@ -170,15 +183,14 @@ public class SparkDataWorker {
     }
 
 
-    public void deleteThisLine(String value){
+    private void deleteThisLine(String value){
         data.createOrReplaceTempView("users");
         data = spark.sql(String.format("SELECT * FROM users WHERE %s != %s",primaryKayFildName, value)).persist(StorageLevel.MEMORY_AND_DISK());
     }
 
-    public Row getNewRow(Row dataRow){
+    private Row getNewRow(Row dataRow) {
 
         String [] newRowData = data.schema().fieldNames();
-
         for (int i = 0; i <newRowData.length ; i++) {
             newRowData[i] = (isFieldWithName(newRowData[i], dataRow))
                     ? getDataFromFild(dataRow, newRowData[i])
@@ -188,8 +200,12 @@ public class SparkDataWorker {
         return createRowWithCentralSchema(newRowData);
     }
 
-    private boolean isFieldWithName(String fildName, Row row) {
-        return row.schema().fieldIndex(fildName)>= 0;
+    private boolean isLineWithPrimaryKay(String primaryValue) throws MoreOneUserWithIdException {
+        return  getRowForPrimaryKey(primaryValue) != null;
+    }
+
+    private boolean isFieldWithName(String fieldName, Row row) {
+        return row.schema().fieldIndex(fieldName)>= 0;
     }
 
 
